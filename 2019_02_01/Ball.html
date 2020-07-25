@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous">
+    </script>
+</head>
+<body>
+<button id="btnFullscreen" class="btn success">Fullscreen</button><br>
+<canvas id="myCanvas" width="1000" height="600" style="background: black"></canvas>
+
+</body>
+</html>
+
+<script>
+
+	/* Get the element you want displayed in fullscreen mode (a video in this example): */
+	var elem = document.getElementById("myCanvas");
+	var canvas = document.getElementById('myCanvas');
+	var context = canvas.getContext('2d');
+	var positionX = canvas.width / 4;
+	var positionY = canvas.height / 2;
+	var speedX = 1;
+	var speedY = 2;
+	var speedModifier = 5;
+	var angleModifier = -1;
+
+	var radius = 50;
+    var colours = ['blue', 'green', 'cyan', 'red', 'yellow', 'orange', 'lime','white', 'silver', 'grey', 'maroon', 'olive', 'aqua', 'navy', 'purple', 'fuchsia', 'pink'];
+    var circleColour = colours[Math.round(Math.random()*16)];
+
+	context.beginPath();
+	window.onload = function start() {
+		setInterval(update, speedModifier);
+	};
+
+	var btn = document.getElementById('btnFullscreen');
+
+	btn.onclick = function () {
+		openFullscreen();
+	};
+
+	function update() {
+		context = canvas.getContext('2d');
+		context.clearRect(0, 0, canvas.width, canvas.height);
+
+        if ((positionY+radius) >= canvas.height || (positionY-radius) <= 0){
+            speedY = angleModifier*speedY;
+	        circleColour = colours[Math.round(Math.random()*16)];
+        } else if ((positionX+radius) >= canvas.width || (positionX-radius) <= 0){
+            speedX = angleModifier*speedX;
+            circleColour = colours[Math.round(Math.random()*16)];
+        }
+
+		positionX = positionX + Math.min(Math.max(parseInt(speedX), -2), 2);
+		positionY = positionY + Math.min(Math.max(parseInt(speedY), -2), 2);
+
+		context.beginPath();
+		context.arc(positionX, positionY, radius, 0, 2 * Math.PI, false);
+		context.fill();
+        context.fillStyle = circleColour;
+	}
+
+	function openFullscreen() {
+		if (elem.requestFullscreen) {
+			elem.requestFullscreen();
+		} else if (elem.mozRequestFullScreen) { /* Firefox */
+			elem.mozRequestFullScreen();
+		} else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+			elem.webkitRequestFullscreen();
+		} else if (elem.msRequestFullscreen) { /* IE/Edge */
+			elem.msRequestFullscreen();
+		}
+	}
+</script>
