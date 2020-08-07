@@ -1,0 +1,49 @@
+<html>
+    <h1>Who gonna winna?!</h1>
+    <canvas id="canvas" style="border: 1px solid #000;" width="1600" height="600"></canvas>
+    <div id="score"></div>
+</html>
+<script>
+    horse_array = [
+        {name:"Sea Biscuit", x:0, y:0, colour:"#beae11",finished:false},
+        {name:"McQueen", x:0, y:100, colour:"#c050bc",finished:false},
+        {name:"Nelson", x:0, y:200, colour:"#71495e",finished:false},
+        {name:"Pepper", x:0, y:300, colour:"#84fa4a",finished:false},
+        {name:"Lucky Number Sleven", x:0, y:400, colour:"#f59dc3",finished:false},
+        {name:"Apollo", x:0, y:500, colour:"#3bada6",finished:false},
+    ]
+    function drawFrame() {
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var score_board = document.getElementById("score");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#567d46";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        horse_array.forEach(element => {
+            moveHorse(element);
+            drawHorse(ctx,element.colour, element.x, element.y);
+            checkFinishLine(element, canvas.width - 100, score_board);
+        });
+    }
+    function drawHorse(ctx, colour,x,y) {
+        ctx.beginPath();
+        ctx.fillStyle = colour;
+        ctx.fillRect(x, y, 100, 100);
+        ctx.stroke();
+    }
+    function moveHorse(horse) {
+        if (!horse.finished) {
+            horse.x = horse.x + Math.floor(Math.random() * 3); 
+        }
+    }
+    function checkFinishLine(horse, linepos, score_board) {
+        if (!horse.finished &&
+        horse.x > linepos) {
+            horse.finished = true;
+            score_board.innerHTML = score_board.innerHTML + '<div style="font-size: large; color:'+horse.colour +'">' + horse.name + '</div>';
+        }
+    }
+    setInterval(function(){
+        drawFrame();
+    }, 5);
+</script>
