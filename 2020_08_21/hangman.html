@@ -54,7 +54,7 @@ function displayWord() {
 
 
 function guessLetter(letter) {
-    if (level > 6 || guessed_letters.includes(letter) || won) {
+    if (level > 5 || guessed_letters.includes(letter) || won) {
         return;
     }
     guessed_letters.push(letter);
