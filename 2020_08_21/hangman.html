@@ -52,7 +52,6 @@ function displayWord() {
     word_element.innerHTML = html + '</h1>';
 }
 
-
 function guessLetter(letter) {
     if (level > 5 || guessed_letters.includes(letter) || won) {
         return;
