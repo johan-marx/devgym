@@ -1,0 +1,161 @@
+<html>
+    <h1>Hangman</h1>
+    <canvas id="canvas" width="300" height="300"></canvas>
+    <div id="word"></div>
+    <button id="buttonA" onclick="guessLetter('A')">A</button>
+    <button id="buttonB" onclick="guessLetter('B')">B</button>
+    <button id="buttonC" onclick="guessLetter('C')">C</button>
+    <button id="buttonD" onclick="guessLetter('D')">D</button>
+    <button id="buttonE" onclick="guessLetter('E')">E</button>
+    <button id="buttonF" onclick="guessLetter('F')">F</button>
+    <button id="buttonG" onclick="guessLetter('G')">G</button>
+    <button id="buttonH" onclick="guessLetter('H')">H</button>
+    <button id="buttonI" onclick="guessLetter('I')">I</button>
+    <button id="buttonJ" onclick="guessLetter('J')">J</button>
+    <button id="buttonK" onclick="guessLetter('K')">K</button>
+    <button id="buttonL" onclick="guessLetter('L')">L</button>
+    <button id="buttonM" onclick="guessLetter('M')">M</button>
+    <button id="buttonN" onclick="guessLetter('N')">N</button>
+    <button id="buttonO" onclick="guessLetter('O')">O</button>
+    <button id="buttonP" onclick="guessLetter('P')">P</button>
+    <button id="buttonQ" onclick="guessLetter('Q')">Q</button>
+    <button id="buttonR" onclick="guessLetter('R')">R</button>
+    <button id="buttonS" onclick="guessLetter('S')">S</button>
+    <button id="buttonT" onclick="guessLetter('T')">T</button>
+    <button id="buttonU" onclick="guessLetter('U')">U</button>
+    <button id="buttonV" onclick="guessLetter('V')">V</button>
+    <button id="buttonW" onclick="guessLetter('W')">W</button>
+    <button id="buttonX" onclick="guessLetter('X')">X</button>
+    <button id="buttonY" onclick="guessLetter('Y')">Y</button>
+    <button id="buttonZ" onclick="guessLetter('Z')">Z</button>
+</html>
+<script>
+
+let dictionary = ["ankle", "mature", "thaw", "insert", "criminal", "quest", "relief", "expectation", "outfit", "shaft", "acquaintance", "carriage", "grave", "neglect", "exceed", "continuation", "misplace", "catch", "candle", "joke"];
+let word = dictionary[Math.floor(Math.random() * dictionary.length)].toUpperCase();
+let word_letters = word.split("");
+let guess_word_letters = word.split("");
+let display_word_letters = guess_word_letters.fill("_");
+let guessed_letters = [];
+let level = 0;
+let won = false;
+
+displayWord();
+drawLevel(level);
+
+function displayWord() {
+    html = '<h1>';
+    for (i = 0; i < display_word_letters.length; i++) {
+        html += display_word_letters[i] + " ";
+    }
+    var word_element = document.getElementById("word");
+    word_element.innerHTML = html + '</h1>';
+}
+
+
+function guessLetter(letter) {
+    if (level > 6 || guessed_letters.includes(letter) || won) {
+        return;
+    }
+    guessed_letters.push(letter);
+    if (word_letters.includes(letter)) {
+        for (i = 0; i < word_letters.length; i++) {
+            if (word_letters[i] == letter) {
+                display_word_letters[i] = letter;
+            }
+        }
+        if (!display_word_letters.includes('_')) {
+            won = true;
+        }
+        displayWord();
+    } else {
+        level = level + 1;
+        drawLevel(level);
+    }
+    var btn = document.getElementById('button' +letter);
+    btn.disabled = true;
+}
+
+function drawLevel(level) {
+    var canvas = document.getElementById("canvas");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGallow(ctx);
+    if (level > 0) {
+        drawHead(ctx);
+    }
+    if (level > 1) {
+        drawBody(ctx);
+    }
+    if (level > 2) {
+        drawArmLeft(ctx);
+    }
+    if (level > 3) {
+        drawArmRight(ctx);
+    }
+    if (level > 4) {
+        drawLegLeft(ctx);
+    }
+    if (level > 5) {
+        drawLegRight(ctx);
+    }
+}
+
+function drawGallow(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(200, 250);
+    ctx.lineTo(200, 0);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(100, 0);
+    ctx.lineTo(200, 0);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(100, 0);
+    ctx.lineTo(100, 50);
+    ctx.stroke();
+}
+
+function drawHead(ctx) {
+    ctx.beginPath();
+    ctx.arc(100, 70, 20, 0, 2 * Math.PI);
+    ctx.stroke();
+}
+
+function drawBody(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(100, 90);
+    ctx.lineTo(100, 150);
+    ctx.stroke();
+}
+
+function drawLegLeft(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(100, 150);
+    ctx.lineTo(80, 230);
+    ctx.stroke();
+}
+
+function drawLegRight(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(100, 150);
+    ctx.lineTo(120, 230);
+    ctx.stroke();
+}
+
+function drawArmLeft(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(100, 100);
+    ctx.lineTo(50, 80);
+    ctx.stroke();
+}
+
+function drawArmRight(ctx) {
+    ctx.beginPath();
+    ctx.moveTo(100, 100);
+    ctx.lineTo(150, 80);
+    ctx.stroke();
+}
+</script>
