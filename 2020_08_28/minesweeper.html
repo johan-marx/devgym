@@ -1,0 +1,80 @@
+<html>
+ <h1>Chernobyl Simulator</h1>
+ <div id="minefield"></div>
+</html>
+<style>
+    .land-block {
+        height: 30px;
+        width: 30px;
+    }
+</style>
+<script src="https://kit.fontawesome.com/7111da8bb3.js" crossorigin="anonymous"></script>
+<script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+  crossorigin="anonymous"></script>
+<script>
+    number_array = ['a','b','c','d','e','f','g','h'];
+    let land_grid = {};
+    let bomb_icon = '<i class="fas fa-radiation"></i>';
+    let clean_icon = '<i class="far fa-grin-beam-sweat"></i>';
+    let flag_icon = '<i class="fas fa-flag-usa"></i>';
+    let dead = false;
+    initLandData();
+    drawLand();
+    function initLandData() {
+        for (i = 0; i < 8; i++) {
+            for (j = 0; j < 8; j++) {
+                let coord = number_array[i] + j.toString();
+                if (Math.random() < 0.25) {
+                    land_grid[coord] = 1;
+                } else {
+                    land_grid[coord] = 0;
+                }
+            }
+        }
+    }
+
+    function drawLand() {
+        let minefield_element = document.getElementById("minefield");
+        let row_index = '';
+        Object.entries(land_grid).forEach(entry => {
+        const [key, value] = entry;
+        if (row_index !== key.charAt(0)) {
+            row_index = key.charAt(0);
+            minefield_element.innerHTML = minefield_element.innerHTML + '<br>';
+        }
+        minefield_element.innerHTML = minefield_element.innerHTML + '<button class="land-block" id="'+ key +'" onclick="stepOn(\''+ key +'\')">&nbsp</button>';
+        });
+    }
+
+    function stepOn(coord) {
+        if (dead) {
+            return;
+        }
+        if (land_grid[coord] == 1) {
+            $("#"+coord).html(bomb_icon);
+            dead = true;
+            setTimeout(function(){ window.location.replace("https://media.giphy.com/media/3oKIPiqfUtLCnIKxRS/giphy.gif");
+ }, 3000);
+        } else {
+            $("#"+coord).html(clean_icon);
+        }
+    }
+
+    $(".land-block").mousedown(function(ev){
+        if (dead) {
+            return;
+        }
+        if(ev.which == 3)
+        {
+            $("#"+event.target.id.toString()).html(flag_icon);
+        }
+    });
+
+    $(document).bind("contextmenu",function(e){
+        return false;
+    });
+
+
+</script>
