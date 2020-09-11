@@ -1,0 +1,196 @@
+<html>
+ <h1>Snek</h1>
+ <div id="score"></div>
+ <canvas id="snek_grid" style="border: 1px solid black;" width="640" height="640"></canvas>
+</html>
+
+<script>
+let snake_array = ['14_16','15_16','16_16','17_16']
+let land_grid = [];
+let direction = 'W';
+let dead = false;
+let score = 0;
+let food_pos = generateFoodCoords();
+var score_element = document.getElementById("score");
+score_element.innerHTML = 0
+setInterval(function(){
+        drawFrame();
+}, 100);
+
+initGridData();
+
+function generateFoodCoords() {
+    pos_found = false;
+    while (!pos_found) {
+        coords = Math.floor(Math.random()*32) + '_' + Math.floor(Math.random()*32);
+        if (!snake_array.includes(coords)) {
+            pos_found = true;
+        }
+    }
+    return coords;
+}
+
+function drawFrame() {
+    if (dead) {
+        return;
+    }
+    let frame_direction = direction;
+    var canvas = document.getElementById("snek_grid");
+    var ctx = canvas.getContext("2d");
+    var score_board = document.getElementById("score");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    moveSnek(frame_direction);
+    drawFood(ctx);
+    drawSnek(ctx);
+}
+
+function initGridData() {
+    for (i = 0; i < 32; i++) {
+        for (j = 0; j < 32; j++) {
+            let coord = i.toString() + '_' + j.toString();
+            land_grid[coord] = 0;
+        }
+    }
+}
+
+function moveSnek(frame_direction) {
+    head = snake_array[0];
+    let coord_array = head.split("_");
+    switch (frame_direction) {
+        case 'N' : 
+            coord_array[1] = parseInt(coord_array[1])-1;
+            if (isDead(coord_array)) {
+                dead = true;
+                return;
+            }
+            if (checkEat(head)) {
+                snake_array.unshift((coord_array[0]) + '_' + (coord_array[1]));
+            }
+            snake_array.unshift((coord_array[0]) + '_' + (coord_array[1]));
+            snake_array.pop();
+            break;
+        case 'E' : 
+            coord_array[0] = parseInt(coord_array[0])+1;
+            if (isDead(coord_array)) {
+                dead = true;
+                return;
+            }
+            if (checkEat(head)) {
+                snake_array.unshift((coord_array[0]) + '_' + (coord_array[1]));
+            }
+            snake_array.unshift((coord_array[0]) + '_' + (coord_array[1]));
+            snake_array.pop();
+            break;
+        case 'S' : 
+            coord_array[1] = parseInt(coord_array[1])+1;
+            if (isDead(coord_array)) {
+                dead = true;
+                return;
+            }
+            if (checkEat(head)) {
+                snake_array.unshift((coord_array[0]) + '_' + (coord_array[1]));
+            }
+            snake_array.unshift((coord_array[0]) + '_' + (coord_array[1]));
+            snake_array.pop();
+            break;
+        case 'W' : 
+            coord_array[0] = parseInt(coord_array[0])-1;
+            if (isDead(coord_array)) {
+                dead = true;
+                return;
+            }
+            if (checkEat(head)) {
+                snake_array.unshift((coord_array[0]) + '_' + (coord_array[1]));
+            }
+            snake_array.unshift((coord_array[0]) + '_' + (coord_array[1]));
+            snake_array.pop();
+            break;
+    }
+
+}
+
+function drawSnek(ctx) {
+
+    Object.entries(land_grid).forEach(entry => {
+    const [key, value] = entry;
+    let coord_array = key.split("_");
+    if (snake_array.includes(key)) {
+        drawSnekSegment(ctx, coord_array[0], coord_array[1]);
+    }
+    });
+}
+
+function drawFood(ctx) {
+    let coord_array = food_pos.split("_");
+    drawFoodSpot(ctx,coord_array[0], coord_array[1])
+}
+
+function drawSpace(ctx,x,y) {
+    ctx.fillRect(x*20, y*20, 20, 20);
+}
+
+function drawSnekSegment(ctx,x,y) {
+    ctx.fillRect(x*20, y*20, 20, 20);
+}
+
+function drawFoodSpot(ctx,x,y) {
+    ctx.fillRect(x*20, y*20, 20, 20);
+}
+
+function isDead(coord_array) {
+    if (coord_array[0] > 32 || coord_array[1] > 32 || coord_array[0] < 0 || coord_array[1] < 0) {
+        return true;
+    }
+
+    if (snake_array.includes((coord_array[0]) + '_' + (coord_array[1]))) {
+        return true;
+    }    
+    
+    return false;
+}
+
+function checkEat(head) {
+    if (head == food_pos) {
+        food_pos = generateFoodCoords();
+        var score_element = document.getElementById("score");
+        score_element.innerHTML = score+1
+        return true
+    }
+    return false
+}
+
+document.onkeydown = checkKey;
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '38') {
+        // up arrow
+        if (direction != 'S') {
+            direction = 'N';
+        }
+    }
+    else if (e.keyCode == '40') {
+        // down arrow
+        if (direction != 'N') {
+            direction = 'S';
+        }
+    }
+    else if (e.keyCode == '37') {
+       // left arrow
+        if (direction != 'E') {
+            direction = 'W';
+        }
+    }
+    else if (e.keyCode == '39') {
+       // right arrow
+       if (direction != 'W') {
+            direction = 'E';
+        }
+       
+    }
+
+}
+
+</script>
