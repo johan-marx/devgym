@@ -26,6 +26,12 @@
 	var positionY = canvas.height / 2;
 	var speedX = 1;
 	var speedY = 1;
+	if (Math.random() > 0.5) {
+		speedX = -1
+	}
+	if (Math.random() > 0.5) {
+		speedY = -1
+	}
 	var speedModifier = 5;
 	var angleModifier = -1;
 
