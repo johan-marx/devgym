@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<style>
+    body {
+        font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif
+    }
+    .field {
+        height: 200px;
+        width: 200px;
+        border: 3px solid black;
+        text-align: center;
+        font-size: 100px;
+    }
+</style>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe</title>
+    <script
+    src="https://code.jquery.com/jquery-3.3.1.min.js"
+    integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+    crossorigin="anonymous">
+    </script>
+</head>
+<body>
+    <center>
+        <h1>Tic Tac Toe</h1>
+        <h3 id="feedback">X to move</h3>
+        <table>
+            <tr>
+            <td class="field" id="A1"></td>
+            <td class="field" id="A2"></td>
+            <td class="field" id="A3"></td>
+            </tr>
+            <tr>
+            <td class="field" id="B1"></td>
+            <td class="field" id="B2"></td>
+            <td class="field" id="B3"></td>
+            </tr>
+            <tr>
+            <td class="field" id="C1"></td>
+            <td class="field" id="C2"></td>
+            <td class="field" id="C3"></td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>
+
+<script>
+    var active = true;
+    var turn = 'X';
+    var gameObj = new Object;
+    gameObj.A1 = null;
+    gameObj.A2 = null;
+    gameObj.A3 = null;
+    gameObj.B1 = null;
+    gameObj.B2 = null;
+    gameObj.B3 = null;
+    gameObj.C1 = null;
+    gameObj.C2 = null;
+    gameObj.C3 = null;
+    
+    function clickField(field) {
+        if (!active) {
+            return;
+        }
+        if (gameObj[field] === null) {
+            populateField(field);
+            endTurn();
+            checkWin();
+        }
+    }
+
+    function populateField(field) {
+        gameObj[field] = turn;
+        $('#'+field).html(turn);
+    }
+
+    function endTurn() {
+        if (turn == 'X') {
+            turn = 'O';
+        } else {
+            turn = 'X'
+        }
+        displayTurn();
+    }
+
+    function displayTurn() {
+        let feedback = turn + ' to move';
+        displayFeedback(feedback);
+    }
+
+    function displayFeedback(feedback) {
+        $('#feedback').html(feedback);
+    }
+
+    function checkWin() {
+        winner = null;
+        turns = ['X','O'];
+        turns.forEach(function(turn) {
+            if (gameObj.A1 == turn && gameObj.A2 == turn && gameObj.A3 == turn) {
+                winner = turn;
+            }
+            if (gameObj.B1 == turn && gameObj.B2 == turn && gameObj.B3 == turn) {
+                winner = turn;
+            }
+            if (gameObj.C1 == turn && gameObj.C2 == turn && gameObj.C3 == turn) {
+                winner = turn;
+            }
+            if (gameObj.A1 == turn && gameObj.B1 == turn && gameObj.C1 == turn) {
+                winner = turn;
+            }
+            if (gameObj.A2 == turn && gameObj.B2 == turn && gameObj.C2 == turn) {
+                winner = turn;
+            }
+            if (gameObj.A3 == turn && gameObj.B3 == turn && gameObj.C3 == turn) {
+                winner = turn;
+            }
+            if (gameObj.A1 == turn && gameObj.B2 == turn && gameObj.C3 == turn) {
+                winner = turn;
+            }
+            if (gameObj.A3 == turn && gameObj.B2 == turn && gameObj.C1 == turn) {
+                winner = turn;
+            }
+        });
+
+        if (winner != null) {
+            active = false;
+            displayFeedback(winner + ' has won!');
+        }
+    }
+
+    $(".field").click(function(e) {
+        clickField(e.target.id);
+    });
+</script>
