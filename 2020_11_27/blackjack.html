@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body>
+    <div class="row">
+        <div class="col-12 text-center">
+            <h1>Blackjack</h1>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-6">
+            <div class="row">
+                <div class="col-12">
+                    <button type="button" id="hitme" class="btn btn-primary" onclick="hit()">Hit me!</button>
+                    <div class="row">
+                        <div class="col-6">
+                            <div id="player_score"></div>
+                        </div>
+                        <div class="col-6">
+                            <div id="player_status"></div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <div id="player_hand"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+</body>
+</html>
+<style>
+    .card {
+        height: 92px;
+        width: 59px;
+        font-size: x-large;
+        padding: 3px;
+    }
+    .row {
+        margin: auto;
+        margin-top: auto;
+    }
+</style>
+<script>
+    let deck = [];
+    let suites = ['&clubs;','&diams;','&hearts;','&spades;'];
+    let faces = ['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+    let player_hand = [];
+    function initDeck() {
+        for (i = 0; i < 4; i++) {
+            suites.forEach(suite => 
+                faces.forEach(face => 
+                    deck.push({face,suite})
+                )
+            );
+        }
+    }
+
+    function shuffleDeck() {
+        deck = shuffle(deck);
+    }
+
+    // Fisher-Yates (aka Knuth) Shuffle
+    function shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+        return array;
+    }
+
+    function hit() {
+        card = drawCard();
+        player_hand.push(card);
+        $("#player_hand").html($("#player_hand").html() + getCardHtml(card));
+        score = calculateScore();
+        $("#player_score").html(score);
+        if (score = 21) {
+            $("#player_status").html("BLACKJACK");
+        } else if (score > 21) {
+            $("#player_status").html("BUST");
+            $("#hitme").html('');
+        }
+
+    }
+
+    function drawCard() {
+        card = deck[0];
+        deck.shift();
+        return card;
+    }
+
+    function getCardHtml(card) {
+        if (card.suite === '&diams;' || card.suite === '&hearts;') {
+            colour = 'red';
+        } else {
+            colour = 'black';
+        }
+        html = '<div style="color:'+colour+'" class="card">'+card.face+'<br>'+card.suite+'</div>';
+        return html;
+    }
+
+    function calculateScore() {
+        score = 0;
+        player_hand.forEach(card => {
+            score += getCardScore(card.face); 
+        })
+
+        if (score > 21) {
+            score = 0;
+            player_hand.forEach(card => {
+            score += getCardScore(card.face, true); 
+            })
+        }
+
+        return score;
+    }
+
+    function getCardScore(face, over = false) {
+        switch (face) {
+            case 'A' :
+                if (over) {
+                    return 1;
+                } else {
+                    return 11;
+                }
+                break;
+            case 'J':
+            case 'Q':
+            case 'K':
+                return 10;
+                break;
+            default:
+                return parseInt(face);
+        }
+    }
+
+    initDeck();
+    shuffleDeck();
+
+</script>
