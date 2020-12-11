@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://kit.fontawesome.com/7111da8bb3.js" crossorigin="anonymous"></script>
+    <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+    crossorigin="anonymous"></script>
+</head>
+<style>
+    td {
+        border: 1px solid black;
+        height: 50px;
+        width: 50px;
+        padding: 0;
+        text-align: center;
+    }
+
+    .tile:hover {
+       background-color: #EEE; 
+       cursor:pointer;
+    }
+    .matched {
+        background-color: lightgreen;
+    }
+    tr {
+        padding: 0;
+    }
+</style>
+<body>
+    <center>
+        <h1>Memory</h1>
+        <div id="grid_view"></div>
+    </center>
+</body>
+</html>
+<script>
+    number_of_cols = 8;
+    number_of_rows = 8;
+    types = {0:"beer",1:"cat",2:"dog",3:"crow",4:"dove",5:"dragon",5:"fish",6:"frog",7:"hippo",8:"kiwi-bird",
+    9:"air-freshener",10:"ambulance",11:"bus",12:"car",13:"car-battery",14:"caravan",15:"charging-station",16:"gas-pump",
+    17:"motorcycle",18:"oil-can",19:"otter",20:"paw",21:"shuttle-van",22:"spider",23:"tachometer-alt",24:"truck",
+    25:"trailer",26:"truck-monster",27:"truck-pickup",28:"apple-alt",29:"carrot",30:"pepper-hot",31:"lemon",32:"coffee"};
+    game_matrix = [];
+    initGrid();
+    tiles_clicked = 0;
+    clicked_array = [];
+    function initGrid() {
+        let html = '<table>';
+        var i;
+        face_count = 0;
+        for (i = 0; i < number_of_rows; i++) {
+            html += '<tr>';
+            var j;
+            for (j = 0; j < number_of_cols; j++) {
+                pos = i+"_"+j;
+                type = face_count%32;
+                game_matrix.push({pos, type});
+                html += '<td class="tile" id="'+pos+'"></td>';
+                face_count++;
+            }
+            html += '<tr>';
+        }
+        html += '</table>';
+        $("#grid_view").html(html);
+        game_matrix = shuffle(game_matrix);
+        console.log(game_matrix);
+    }
+
+
+    $(".tile").on('click', function(event){
+        pos = this.id;
+        type = getTileType(pos);
+        clicked_array.push({pos,type})
+        evalTiles();
+    });
+
+    $(".matched").on('click', function(event){
+        return;
+    });
+
+    function getTileType(pos) {
+        type = 0;
+        game_matrix.forEach(element => {
+            if (element.pos == pos) {
+                type = element.type;
+            }
+        });
+        return type;
+    }
+
+    function getTypePciture(type) {
+        type = "";
+        types.forEach(element => {
+            if (element.pos == pos) {
+                type = element.type;
+            }
+        });
+        return type;
+    }
+
+    function evalTiles() {
+        count = clicked_array.length;
+        if (count == 1) {
+            showTile(clicked_array[0])
+        } else if (count == 2) {
+            showTile(clicked_array[1])
+            if (clicked_array[0].type == clicked_array[1].type) {
+                matchTiles(clicked_array[0], clicked_array[1])
+                clicked_array = [];
+            }
+        } else {
+            clicked_array.forEach(element => {
+                hideTile(element);
+            });
+            clicked_array = [];
+        }
+
+    }
+
+    function showTile(tile) {
+        $("#"+tile.pos).html('<i class="fas fa-'+types[tile.type]+'"></i>');
+    }
+
+    function hideTile(tile) {
+        $("#"+tile.pos).html('');
+    }
+
+    function matchTiles(tile1, tile2) {
+        $("#"+tile1.pos).addClass("matched");
+        $("#"+tile1.pos).removeClass("tile");
+        $("#"+tile2.pos).addClass("matched");
+        $("#"+tile2.pos).removeClass("tile");
+    }
+
+    // Fisher-Yates (aka Knuth) Shuffle
+    function shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex].type;
+                array[currentIndex].type = array[randomIndex].type;
+                array[randomIndex].type = temporaryValue;
+            }
+        return array;
+    }
+</script>
