@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+    crossorigin="anonymous"></script>
+</head>
+<body>
+    <center>
+        <h1>Connect Four</h1>
+        <div id="turn_inidcator"></div>
+        <div id="game_board"></div>
+    </center>
+</body>
+</html>
+<style>
+    h1 {
+        color: white;
+    }
+
+    body {
+        font-family: Arial, Helvetica, sans-serif;
+
+        background-color: #1b4469;
+    }
+
+    td {
+        border: 1px solid black;
+        background-color: #3a87cb;
+        height: 100px;
+        width: 100px;
+        padding: 0;
+        margin: 0;
+        text-align: center;
+        vertical-align:middle;
+        font-size: 80px;
+    }
+
+    .tile:hover {
+       background-color: #EEE; 
+       cursor:pointer;
+    }
+    .matched {
+        background-color: lightgreen;
+    }
+    tr {
+        padding: 0;
+    }
+    .colour-one {
+        color: red;
+    }
+    .colour-two {
+        color: yellow;
+    }
+    #turn_inidcator {
+        font-size: xx-large;
+    }
+</style>
+<script>
+    number_of_cols = 7;
+    number_of_rows = 6;
+    game_matrix = [];
+    turn = Math.ceil(Math.random()*2);
+
+    initBoardState();
+    drawTurnIndicator();
+
+    //FUNCTIONS
+    $("td").on('click', function(event){
+        pos = this.id;
+        colour = checkPosColour(pos);
+        arr = pos.split("_");
+        column = arr[1];
+        dropPiece(column);
+    });
+
+    function dropPiece(column) {
+        valid = false;
+        for (i = number_of_rows - 1; i >= 0; i--) {
+            pos = i + '_'+column;
+            colour = checkPosColour(pos);
+            if (colour == null) {
+                valid = true;
+                setPosColour(pos, turn);
+                i = 0;
+            }
+        }
+        if (valid) {
+            drawBoard();
+            checkWinState();
+            swapPlayers();
+        }
+        
+    }
+
+    function swapPlayers() {
+        if (turn == 1) {
+            turn = 2;
+        } else if (turn == 2) {
+            turn = 1;
+        }
+        drawTurnIndicator();
+    }
+
+    function initBoardState() {
+        let html = '<table>';
+        var i;
+        face_count = 0;
+        for (i = 0; i < number_of_rows; i++) {
+            html += '<tr>';
+            var j;
+            for (j = 0; j < number_of_cols; j++) {
+                pos = i+"_"+j;
+                colour = null;
+                game_matrix.push({pos, colour});
+                html += '<td class="tile" id="'+pos+'"></td>';
+            }
+            html += '<tr>';
+        }
+        html += '</table>';
+        $("#game_board").html(html);
+    }
+
+    function drawBoard() {
+        game_matrix.forEach(element => {
+            if (element.colour === 1) {
+                $("#"+element.pos).addClass("colour-one");	
+                $("#"+element.pos).html("&#11044;");	
+            } else if (element.colour === 2) {
+                $("#"+element.pos).addClass("colour-two");	
+                $("#"+element.pos).html("&#11044;");	
+            }
+        });
+    }
+
+    function checkWinState() {
+        winner = checkWinner();
+        if (winner !== null) {
+            if (winner === 1) {
+            $("#turn_inidcator").addClass("colour-one");	
+            $("#turn_inidcator").html("&#11044; WON");	
+            } else if (winner === 2) {
+                $("#turn_inidcator").addClass("colour-two");	
+                $("#turn_inidcator").html("&#11044; WON");	
+            }
+            turn = null;
+        }
+    }
+
+    function checkWinner() {
+        winner = null;
+        game_matrix.forEach(element => {
+            if (element.colour !== null) {
+                arr = element.pos.split("_");
+                // Horizontal
+                counter = 1;
+                for (i = 1; i < 4; i++) {
+                    pos = arr[0]+'_'+(parseInt(arr[1])+parseInt(i));
+                    colour = checkPosColour(pos);
+                    if (colour == element.colour) {
+                        counter++;   
+                    }
+                }
+                if (counter == 4) {
+                    winner = element.colour;
+                }
+
+                // Vertical
+                counter = 1;
+                for (i = 1; i < 4; i++) {
+                    pos = (parseInt(arr[0])+parseInt(i)+'_'+arr[1]);
+                    colour = checkPosColour(pos);
+                    if (colour == element.colour) {
+                        counter++;   
+                    }
+                }
+                if (counter == 4) {
+                    winner = element.colour;
+                }
+
+                // Diag
+                counter = 1;
+                for (i = 1; i < 4; i++) {
+                    pos = (parseInt(arr[0])+parseInt(i))+'_'+ (parseInt(arr[1])+parseInt(i));
+                    colour = checkPosColour(pos);
+                    if (colour == element.colour) {
+                        counter++;   
+                    }
+                }
+                if (counter == 4) {
+                    winner = element.colour;
+                }
+
+                // Diag
+                counter = 1;
+                for (i = 1; i < 4; i++) {
+                    pos = (parseInt(arr[0])+parseInt(i))+'_'+ (parseInt(arr[1])-parseInt(i));
+                    colour = checkPosColour(pos);
+                    if (colour == element.colour) {
+                        counter++;   
+                    }
+                }
+                if (counter == 4) {
+                    winner = element.colour;
+                }
+            }
+        });
+        return winner;
+    }
+
+    function checkPosColour(pos) {
+        colour = null;
+        game_matrix.forEach(element => {
+            if (element.pos == pos) {
+                colour = element.colour;
+            }
+        });
+        return colour;
+    }
+
+    function setPosColour(pos, colour) {
+        count = 0;
+        place = 0;
+        game_matrix.forEach(element => {
+            if (element.pos == pos) {
+                place = count;
+            }
+            count++;
+        });
+
+        game_matrix[place] = {pos, colour};
+    }
+
+    function drawTurnIndicator() {
+        if (turn === 1) {
+            $("#turn_inidcator").removeClass("colour-two");	
+            $("#turn_inidcator").addClass("colour-one");	
+            $("#turn_inidcator").html("&#11044; TO MOVE");	
+        } else if (turn === 2) {
+            $("#turn_inidcator").removeClass("colour-one");	
+            $("#turn_inidcator").addClass("colour-two");	
+            $("#turn_inidcator").html("&#11044; TO MOVE");	
+        }
+    }
+
+</script>
