@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slide Game</title>
+    <script
+    src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+    crossorigin="anonymous"></script>
+</head>
+<body>
+    <center>
+        <table id="page" >
+            <tr>
+                <td id='1' class="one"></td>
+                <td id='2' class="two"></td>
+                <td id='3' class="three"></td>
+            </tr>
+            <tr>
+                <td id='3' class="four"></td>
+                <td id='4' class="five"></td>
+                <td id='5' class="six"></td>
+            </tr>
+            <tr>
+                <td id='6' class="seven"></td>
+                <td id='7' class="eight"></td>
+                <td id='8' class="nine"></td>
+            </tr>
+        </table>
+    </center>
+</body>
+</html>
+<style>
+    td {
+        height: 300px;
+        width: 300px;
+        border-collapse: collapse;
+        padding: 0; 
+        margin: 0;
+    }
+
+    .one {
+        background-image: url("img/row-1-col-1.jpg");
+    }
+    .two {
+        background-image: url("img/row-1-col-2.jpg");
+    }
+    .three {
+        background-image: url("img/row-1-col-3.jpg");
+    }
+    .four {
+        background-image: url("img/row-2-col-1.jpg");
+    }
+    .five {
+        background-image: url("img/row-2-col-2.jpg");
+    }
+    .six {
+        background-image: url("img/row-2-col-3.jpg");
+    }
+    .seven {
+        background-image: url("img/row-3-col-1.jpg");
+    }
+    .eight {
+        background-image: url("img/row-3-col-2.jpg");
+    }
+    .nine {
+        background-image: url("img/row-3-col-3.jpg");
+    }
+</style>
+<script>
+    game_array = [];
+    removed_pic = null;
+    initGameArray();
+    drawGrid();
+
+    $("td").on('click', function(event){
+        pos = this.id;
+        movePiece(pos);
+    });
+
+    function movePiece(pos) {
+        if (getPiecePic(pos) > 0) {
+            for (var i = -3; i <= 4; i++) {
+                if (getPiecePic(pos) == 0) {
+                    swapPieces(pos, pos+i);
+                    drawGrid();
+                    return;
+                }
+            }  
+        }
+        console.log(game_array);
+    }
+
+    function swapPieces(pos1, pos2) {
+        pic1 = getPiecePic(pos1);
+        pic2 = getPiecePic(pos2);
+        setPiecePic(pos1, pic2);
+        setPiecePic(pos2, pic1);
+    }
+    
+    function getPiecePic(pos) {
+        pic = 0;
+        game_array.forEach(element => {
+            if (element.pos == pos) {
+                pic = element.pic;
+            }
+        });
+        return pic;
+    }
+
+    function setPiecePic(pos, pic) {
+        game_array.forEach(element => {
+            if (element.pos == pos) {
+                element.pic = pic;
+            }
+        });
+    }
+
+    function initGameArray() {
+        var list = [];
+        for (var i = 1; i <= 9; i++) {
+            list.push(i);
+        }   
+        list = shuffle(list);
+        removed_pic = list[0];
+        list[0] = 0;
+        for (var i = 1; i <= 9; i++) {
+            pos = i;
+            pic = list[i-1];
+            game_array.push({pos,pic});
+        } 
+        console.log(game_array);
+        console.log(removed_pic);
+    }
+
+    function drawGrid() {
+        game_array.forEach(element => {
+            switch(element.pic) {
+                case 1:
+                    $("#"+element.pos).addClass("one");	
+                    break;
+                case 2:
+                    $("#"+element.pos).addClass("two");	
+                    break;
+                case 3:
+                    $("#"+element.pos).addClass("three");	
+                    break;
+                case 4:
+                    $("#"+element.pos).addClass("four");	
+                    break;
+                case 5:
+                    $("#"+element.pos).addClass("five");	
+                    break;
+                case 6:
+                    $("#"+element.pos).addClass("six");	
+                    break;
+                case 7:
+                    $("#"+element.pos).addClass("seven");	
+                    break;
+                case 8:
+                    $("#"+element.pos).addClass("eight");	
+                    break;
+                case 9:
+                    $("#"+element.pos).addClass("nine");	
+                    break;
+                default:
+                    $("#"+element.pos).removeClass();	
+            }
+        });
+    }
+
+    function shuffle(array) {
+        var currentIndex = array.length, temporaryValue, randomIndex;
+            // While there remain elements to shuffle...
+            while (0 !== currentIndex) {
+
+                // Pick a remaining element...
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex -= 1;
+
+                // And swap it with the current element.
+                temporaryValue = array[currentIndex];
+                array[currentIndex] = array[randomIndex];
+                array[randomIndex] = temporaryValue;
+            }
+        return array;
+    }
+</script>
