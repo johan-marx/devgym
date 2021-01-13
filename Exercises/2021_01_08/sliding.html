@@ -18,14 +18,14 @@
                 <td id='3' class="three"></td>
             </tr>
             <tr>
-                <td id='3' class="four"></td>
-                <td id='4' class="five"></td>
-                <td id='5' class="six"></td>
+                <td id='4' class="four"></td>
+                <td id='5' class="five"></td>
+                <td id='6' class="six"></td>
             </tr>
             <tr>
-                <td id='6' class="seven"></td>
-                <td id='7' class="eight"></td>
-                <td id='8' class="nine"></td>
+                <td id='7' class="seven"></td>
+                <td id='8' class="eight"></td>
+                <td id='9' class="nine"></td>
             </tr>
         </table>
     </center>
@@ -76,20 +76,32 @@
 
     $("td").on('click', function(event){
         pos = this.id;
-        movePiece(pos);
+        movePiece(parseInt(pos));
     });
 
     function movePiece(pos) {
         if (getPiecePic(pos) > 0) {
-            for (var i = -3; i <= 4; i++) {
-                if (getPiecePic(pos) == 0) {
-                    swapPieces(pos, pos+i);
-                    drawGrid();
-                    return;
-                }
-            }  
+            if (getPiecePic(pos-1) === 0) {
+                swapPieces(pos, pos-1);
+                drawGrid();
+                return;
+            }
+            if (getPiecePic(pos+1) === 0) {
+                swapPieces(pos, pos+1);
+                drawGrid();
+                return;
+            }
+            if (getPiecePic(pos-3) === 0) {
+                swapPieces(pos, pos-3);
+                drawGrid();
+                return;
+            }
+            if (getPiecePic(pos+3) === 0) {
+                swapPieces(pos, pos+3);
+                drawGrid();
+                return;
+            }
         }
-        console.log(game_array);
     }
 
     function swapPieces(pos1, pos2) {
@@ -100,7 +112,10 @@
     }
     
     function getPiecePic(pos) {
-        pic = 0;
+        pic = -1;
+        if (pos < 1 || pos > 9) {
+            return pic;
+        }
         game_array.forEach(element => {
             if (element.pos == pos) {
                 pic = element.pic;
@@ -125,43 +140,50 @@
         list = shuffle(list);
         removed_pic = list[0];
         list[0] = 0;
-        for (var i = 1; i <= 9; i++) {
-            pos = i;
-            pic = list[i-1];
+        for (var i = 0; i <= 8; i++) {
+            pos = i+1;
+            pic = list[i];
             game_array.push({pos,pic});
-        } 
-        console.log(game_array);
-        console.log(removed_pic);
+        }
     }
 
     function drawGrid() {
         game_array.forEach(element => {
             switch(element.pic) {
                 case 1:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("one");	
                     break;
                 case 2:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("two");	
                     break;
                 case 3:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("three");	
                     break;
                 case 4:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("four");	
                     break;
                 case 5:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("five");	
-                    break;
+                        break;
                 case 6:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("six");	
                     break;
                 case 7:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("seven");	
                     break;
                 case 8:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("eight");	
                     break;
                 case 9:
+                    $("#"+element.pos).removeClass();	    
                     $("#"+element.pos).addClass("nine");	
                     break;
                 default:
