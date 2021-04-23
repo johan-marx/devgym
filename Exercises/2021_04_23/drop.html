@@ -1,0 +1,108 @@
+<html>
+    <h1>Dropping the ball</h1>
+    <div id="score">Score 0</div>
+    <canvas id="canvas" style="border: 1px solid #000;" width="300" height="500"></canvas>
+</html>
+<script>
+    speed = 1;
+    lanes = [0, 100, 200];
+    timer = 0;
+    score = 0;
+    dead = false;
+    player_colour = '#ff0000';
+    block_colour = '#000000';
+    player = {x:100, y:400};
+    horse_array = [
+        {x:0, y:0}
+    ]
+    function drawFrame() {
+        timer++;
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        var score_board = document.getElementById("score");
+        if (dead) {
+            return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#fff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        drawHorse(ctx,player_colour, player.x, player.y);
+
+        if (timer % 300 == 0) {
+            index = Math.floor(Math.random() * lanes.length);
+            x = lanes[index];
+            y = 0 - Math.floor(Math.random() * 100);
+            horse_array.push({x,y});
+        }
+        horse_array.forEach(element => {
+            moveHorse(element);
+            drawHorse(ctx,block_colour, element.x, element.y);
+            checkDie(element);
+            checkFinishLine(element, canvas.height, score_board);
+        });
+    }
+    function drawHorse(ctx, colour,x,y) {
+        ctx.beginPath();
+        ctx.fillStyle = colour;
+        ctx.fillRect(x, y, 100, 100);
+        ctx.stroke();
+    }
+    function moveHorse(horse) {
+        if (!horse.finished) {
+            horse.y = horse.y + speed; 
+        }
+    }
+    function checkFinishLine(horse, linepos, score_board) {
+        if (horse.y > linepos) {
+            return;
+        }
+        if (horse.y == linepos) {
+            score++;
+            score_board.innerHTML ='<div style="font-size: large;">Score ' + score + '</div>';
+        }
+    }
+    function cleanup() {
+
+    }
+    function checkDie(block) {
+        if (block.y > 700) {
+            return;
+        }
+        if (block.x == player.x) {
+            if ((block.y +100 >= player.y) && (block.y - 100 <= player.y)) {
+                console.log('dead1');
+                dead = true;
+            }
+        }
+    }
+
+    setInterval(function(){
+        drawFrame();
+    }, 5);
+
+
+    document.onkeydown = checkKey;
+
+function checkKey(e) {
+
+    e = e || window.event;
+
+    if (e.keyCode == '37') {
+       // left arrow
+        if (player.x == 0 || player.x == 100) {
+            player.x = 0;
+        } else if(player.x == 200) {
+            player.x = 100;
+        }
+    }
+    else if (e.keyCode == '39') {
+       // left arrow
+       if (player.x == 200 || player.x == 100) {
+            player.x = 200;
+        } else if(player.x == 0) {
+            player.x = 100;
+        }
+    }
+
+}
+</script>
