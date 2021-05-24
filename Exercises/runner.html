@@ -1,0 +1,114 @@
+<style>
+    .bordered {
+        border: 1px solid black;
+    }
+</style>
+<center>
+    <h1>Block Runner</h1>
+    <canvas class="bordered" id="game-canvas" width="600" height="150"></canvas>
+</center>
+
+
+<script>
+    var player_x = 20;
+    var player_y = 120;
+    var player_y_floor = 120;
+
+    var obstacle_distance = 600;
+    var jump = false;
+    var falling = false;
+    var floating = false;
+    var floating_count = 0;
+    var jump_height = 0;
+    var max_jump_height = 75;
+    var dead = false;
+    var mountain_1_distance = Math.round(Math.random()*600);
+
+    function renderFrame() {
+        if (dead) {
+            return;
+        }
+        var canvas = document.getElementById("game-canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle='skyblue';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+        if (jump) {
+            mightAsWellJump();
+        }
+        drawGround(ctx);
+        drawSun(ctx)
+        drawPlayer(ctx,player_x,player_y);
+        drawObstacle(ctx,obstacle_distance,player_y_floor);
+        checkCollision();
+        obstacle_distance--;
+    }
+    function drawPlayer(canvas,x,y) {
+        canvas.fillStyle = "#000000";
+        canvas.fillRect(x, y, 25, 25);
+    }
+    function drawObstacle(canvas,x,y) {
+        canvas.fillStyle = "#FF0000";
+        canvas.fillRect(x, y, 25, 25);
+        if (x < -50) {
+            obstacle_distance = 600 + Math.round(Math.random()*600);
+        }
+    }
+    function mightAsWellJump() {
+        if (jump_height >= max_jump_height) {
+            floating = true;
+        }
+
+        if (floating) {
+            floating_count++
+            if (floating_count > 5) {
+                floating = false;
+                falling = true;
+                floating_count = 0;
+            }
+        }
+ 
+        if (jump && !falling && !floating) {
+            player_y--;
+            jump_height++;
+        }
+
+        if (falling) {
+            player_y++;
+            if (player_y >= player_y_floor) {
+                falling = false;
+                jump = false;
+                jump_height = 0;
+                floating = false;
+                floating_count = 0;
+                player_y = player_y_floor;
+            }
+        }
+    }
+    function checkCollision() {
+        if ((player_x + 25 >= obstacle_distance && player_x - 25 <= obstacle_distance)  &&
+        (player_y + 25 == player_y_floor || player_y == player_y_floor)) {
+            dead = true;
+        }
+    }
+    function drawGround(canvas) {
+        canvas.stroke();
+        canvas.fillStyle="#1f6331";
+        canvas.fillRect(0, 145,600, 150);
+    }
+
+    function drawSun(canvas) {
+        canvas.beginPath();
+        canvas.arc(500, 30, 20, 0, 2 * Math.PI);
+        canvas.fillStyle = "#e2ed18";
+        canvas.fill();
+    }
+
+    document.body.onkeydown = function(e){
+        if(e.keyCode == 32){
+            jump = true;
+        }
+    }
+    
+    setInterval(renderFrame, 5);
+</script>

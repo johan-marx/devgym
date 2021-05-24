@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculator</title>
+</head>
+<script
+  src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+  integrity="sha256-4+XzXVhsDmqanXGHaHvgh1gMQKX40OUvDEBTu8JcmNs="
+  crossorigin="anonymous"></script>
+<body>
+    <div style="height: 1.2rem;font-size: 1rem;" id="prevOperand"></div>
+    <div style="height: 1.2rem;font-size: 1rem;"id="currentOperand"></div>
+    <button class="clear">CLEAR</button>
+    <br>
+    <button class="number">7</button>
+    <button class="number">8</button>
+    <button class="number">9</button>
+    <button class="operation">/</button>
+    <br>
+    <button class="number">4</button>
+    <button class="number">5</button>
+    <button class="number">6</button>
+    <button class="operation">*</button>
+    <br>
+    <button class="number">1</button>
+    <button class="number">2</button>
+    <button class="number">3</button>
+    <button class="operation">-</button>    
+    <br>
+    <button class="number">0</button>
+    <button class="number">.</button>&nbsp;
+    <button class="equal">=</button>
+    <button class="operation">+</button>
+    <br>
+</body>
+</html>
+
+<script>
+    var prevOperand;
+    var currentOperand;
+    var currentOperation = null;
+
+    $(".number").click(function(){
+        addNumber($(this).html().toString());
+    });
+
+    $(".operation").click(function(){
+        addOperation($(this).html().toString());
+    });
+
+    $(".equal").click(function(){
+        equal();
+    });
+
+    $(".clear").click(function(){
+        clear();
+    });
+
+    function addNumber(number) {
+        if (number == '.' &&
+        $("#currentOperand").html().includes('.')) {
+            return;
+        }
+        $("#currentOperand").html($("#currentOperand").html().toString() + number.toString());
+    }
+
+    function addOperation(operation) {
+        if (($("#currentOperand").html() == '' || $("#currentOperand").html() == '.')
+        && currentOperation != null) {
+            currentOperation = operation;
+            var opStr = $("#prevOperand").html();
+            opStr = opStr.substring(0, opStr.length - 1);
+            $("#prevOperand").html(opStr + ' ' + currentOperation.toString());
+            return
+        }
+
+        if ($("#currentOperand").html() == '' || $("#currentOperand").html() == '.') {
+            return
+        }
+
+        if (currentOperation != null) {
+            compute(); 
+            currentOperation = operation;
+            var opStr = $("#prevOperand").html();
+            opStr = opStr.substring(0, opStr.length - 1);
+            $("#prevOperand").html(opStr + ' ' + currentOperation.toString());
+        } else {
+            currentOperation = operation;
+            compute();
+        }
+    }
+
+    function equal() {
+        if ($("#currentOperand").html() == '' || $("#currentOperand").html() == '.') {
+            return
+        }
+        compute();
+        currentOperand = prevOperand;
+        prevOperand = '';
+        $("#currentOperand").html(currentOperand);
+        $("#prevOperand").html('');
+    }
+
+    function compute() {
+        prevOperand = parseFloat($("#prevOperand").html());
+        currentOperand = parseFloat($("#currentOperand").html());
+        if (isNaN(prevOperand)) {
+            $("#prevOperand").html(currentOperand.toString() + ' ' + currentOperation.toString());
+            $("#currentOperand").html('');
+            return;
+        }
+        switch (currentOperation) {
+            case '+' :
+                prevOperand = prevOperand + currentOperand;
+                break
+            case '-' :
+                prevOperand = prevOperand - currentOperand;
+                break
+            case '*' :
+                prevOperand = prevOperand * currentOperand;
+                break
+            case '/' :
+                prevOperand = prevOperand / currentOperand;
+                break
+            default :
+            break
+        }
+        $("#prevOperand").html(prevOperand.toString() + ' ' + currentOperation.toString());
+        $("#currentOperand").html('');
+    }
+
+    function clear() {
+        currentOperand = '';
+        prevOperand = '';
+        currentOperation = null;
+        $("#currentOperand").html('');
+        $("#prevOperand").html('');
+    }
+</script>
