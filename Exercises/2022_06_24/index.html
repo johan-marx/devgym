@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>WebGL Basic</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <style>
+        #canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #001a35;
+        }
+
+        body {
+            background-color: #001a35;
+            background: #001a35;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" ></canvas>
+</body>
+<script>
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    const orangeColor = "#e16634";
+    const blueColor = "#03a7e7";
+
+    let nodesArray;
+
+    //create node class
+    class Node {
+        constructor(x, y, directionX, directionY, size, color, flasher, renderCounter) {
+            this.x = x;
+            this.y = y;
+            this.startX = x;
+            this.startY = y;
+            this.directionX = directionX;
+            this.directionY = directionY;
+            this.size = size;
+            this.color = color;
+            this.flasher = flasher;
+            this.renderCounter = renderCounter;
+        }
+
+        renderNode() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
+
+        updateNode() {
+            // check if the node is going off screen
+            // DONE: only allow node to move in an area of 125x100 from original position 
+            if (this.x >= canvas.width || this.x <= 0 || this.x > this.startX + 125 || this.x < this.startX - 125) {
+                this.directionX = -this.directionX;
+            }
+
+            if (this.y >= canvas.height || this.y <= 0 || this.y > this.startY + 100 || this.y < this.startY - 100) {
+                this.directionY = -this.directionY;
+            }
+
+            //now lets move the node
+            this.x += this.directionX;
+            this.y += this.directionY;
+
+            //DONE: if flasher then toggle color at a random between 50 and 100 counts
+            if (this.flasher) {
+                this.renderCounter++;
+                if (this.renderCounter > (Math.random() * 50 + 50)) {
+                    this.color = (this.color == orangeColor) ? blueColor : orangeColor;
+                    this.renderCounter = 0;
+                }
+            }
+            this.renderNode();
+        }
+    }
+
+    function populateNodes() {
+        nodesArray = [];
+        neighbourNodesArr = [];
+        let numberOfNodes = Math.round(window.innerWidth/7);
+        for (let i = 0; i < numberOfNodes; i++) {
+            let size = (Math.random() * 5) + 1;
+            let flasher = size < 5 ? true : false;
+            let x = Math.floor((Math.random() * ((canvas.width - size * 2) - (size * 2))) + size * 2);
+            let y = Math.floor((Math.random() * ((canvas.height - size * 2) - (size * 2))) + size * 2);
+            let renderCounter = 0;
+            let color;
+            if (i % 4 == 0) {
+                color = orangeColor;
+                flasher = true;
+            } else {
+                color = blueColor;
+                flasher = false;
+            }
+
+            let directionX = (Math.random()) - 0.5;
+            let directionY = (Math.random()) - 0.5;
+
+            nodesArray.push(new Node(x, y, directionX, directionY, size, color, flasher, renderCounter));
+        }
+    }
+
+    function connectNodes() {
+        //DONE: Connect the blueColor non flasher nodes with each other when they are a certain distance from one another
+        let connectNodes = [];
+        let triangles = [];
+
+        nodesArray.forEach(node => {
+            if (node.color == blueColor && !node.flasher) {
+                nodesArray.forEach(node2 => {
+                    if (node2.color == blueColor && !node2.flasher) {
+                        let distance = Math.sqrt(Math.pow(node.x - node2.x, 2) + Math.pow(node.y - node2.y, 2));
+                        if (distance < 150) {
+                            connectNodes.push([node, node2]);
+                            ctx.beginPath();
+                            ctx.moveTo(node.x, node.y);
+                            ctx.lineTo(node2.x, node2.y);
+                            ctx.strokeStyle = "rgba(3, 167, 231, " + (1 - (distance / 150)) + ")";
+                            ctx.stroke();
+
+                            nodesArray.forEach(node3 => {
+                                if (node3.color == blueColor && !node3.flasher) {
+                                    let distance1 = Math.sqrt(Math.pow(node.x - node2.x, 2) + Math.pow(node.y - node2.y, 2));
+                                    let distance2 = Math.sqrt(Math.pow(node.x - node3.x, 2) + Math.pow(node.y - node3.y, 2));
+
+                                    if (distance1 < 75 && distance2 < 75) {
+                                        ctx.beginPath();
+                                        ctx.moveTo(node.x, node.y);
+                                        ctx.lineTo(node2.x, node2.y);
+                                        ctx.lineTo(node3.x, node3.y);
+                                        ctx.fillStyle = "rgba(3, 167, 231, " + (0.25 - (distance1 / 75)/4) + ")";
+                                        ctx.fill();
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+    }
+
+    let counter = 0;
+    function animate() {
+        requestAnimationFrame(animate);
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (let i = 0; i < nodesArray.length; i++) {
+            nodesArray[i].updateNode();
+        }
+        connectNodes();
+    }
+    populateNodes();
+    animate();
+
+    //DONE: When you resize the window you need to fix the issues that appear, nodes get stretched and/or squashed
+
+</script>
+</html>
