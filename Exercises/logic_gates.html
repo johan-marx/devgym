@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="night">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Logic Gates</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/daisyui@2.22.0/dist/full.css"
+            rel="stylesheet"
+            type="text/css"
+        />
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body>
+        <div class="hero min-h-screen bg-dark">
+            <div
+                class="hero-content border border-white/25 rounded flex-col lg:flex-row"
+            >
+                <div>
+                    <h1 class="text-5xl font-thin">
+                        <span class="text-primary">Logic</span>⊕<span
+                            class="text-accent"
+                            >Gates</span
+                        >
+                    </h1>
+                    <div class="form-control">
+                        <label class="cursor-pointer label">
+                            <span class="label-text">A</span>
+                            <input
+                                id="a"
+                                type="checkbox"
+                                checked="checked"
+                                class="checkbox checkbox-primary"
+                                onchange="update()"
+                            />
+                        </label>
+                    </div>
+                    <div class="form-control">
+                        <label class="cursor-pointer label">
+                            <span class="label-text">B</span>
+                            <input
+                                id="b"
+                                type="checkbox"
+                                checked="checked"
+                                class="checkbox checkbox-primary"
+                                onchange="update()"
+                            />
+                        </label>
+                    </div>
+                    <select
+                        id="gate"
+                        class="select select-bordered w-full max-w-xs"
+                        onchange="update()"
+                    >
+                        <option selected>BUFFER</option>
+                        <option>NOT</option>
+                        <option>AND</option>
+                        <option>OR</option>
+                        <option>XOR</option>
+                        <option>NAND</option>
+                        <option>NOR</option>
+                        <option>XNOR</option>
+                    </select>
+                    <div class="form-control">
+                        <label class="cursor-pointer label">
+                            <span class="label-text">OUTPUT</span>
+                            <input
+                                id="output"
+                                type="checkbox"
+                                disabled
+                                checked="checked"
+                                class="checkbox checkbox-accent"
+                            />
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script>
+    function update() {
+        a = document.getElementById('a').checked;
+        b = document.getElementById('b').checked;
+        outputElement = document.getElementById('output');
+        gate = document.getElementById('gate').value;
+
+        // Replace with the correct function
+        output = Math.random() > 0.5;
+
+        // Bonus: Hide 'B' input when a single input gate is selected
+
+        outputElement.checked = output;
+    }
+</script>
