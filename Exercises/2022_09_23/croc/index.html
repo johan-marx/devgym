@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+<body style="height:100%">
+
+<img id="croc" width="50" height="50"
+src="croc.png" alt="CROC" style="display:none">
+
+<img id="dead" width="50" height="50"
+src="dead.png" alt="DEAD" style="display:none">
+
+<img id="cactus" width="50" height="50"
+src="cactus.png" alt="CACTUS" style="display:none">
+
+<img id="cloud" width="50" height="50"
+src="cloud.png" alt="CLOUD" style="display:none">
+
+<div id="myDiv" style="text-align:center;height:97vh">
+<canvas id="myCanvas"  style="display:block;border:1px solid #c3c3c3;height:100%">
+</canvas>
+</div>
+<script>
+// Keyboard
+var SPACE_KEY = false;
+var LEFT_KEY = false;
+var RIGHT_KEY = false;
+var InitKeyboard = function() {
+	document.onkeydown = keyDown;
+	document.onkeyup = keyUp;
+}
+var keyDown = function(e) {
+    switch (e.keyCode) {
+		case 32: SPACE_KEY = true; break;
+		case 37: LEFT_KEY  = true; break;
+		case 39: RIGHT_KEY = true; break;
+	}
+}
+var keyUp = function(e) {
+    switch (e.keyCode) {
+		case 32: SPACE_KEY = false; break;
+		case 37: LEFT_KEY  = false; break;
+		case 39: RIGHT_KEY = false; break;
+	}
+}
+InitKeyboard();
+var canvas = document.getElementById("myCanvas");
+var screenw = canvas.width = document.body.clientWidth;
+var screenh = canvas.height = document.body.clientHeight;
+canvas.addEventListener('click', function() { 
+  if (canvas.webkitRequestFullscreen) { /* Chrome, Safari & Opera */
+    canvas.webkitRequestFullscreen();
+  }
+}, false);
+var ctx = canvas.getContext("2d");
+ctx.globalAlpha = 1.0; // transparency
+var imgCroc = document.getElementById("croc");
+var imgDead = document.getElementById("dead");
+var imgCactus = document.getElementById("cactus");
+var imgCloud = document.getElementById("cloud");
+var crocX = 50;
+var crocY = 500;
+var crocangle = 0;
+var crocYBase = crocY;
+
+
+var cactusStart = screenw*20;
+var cactusX = cactusStart;
+var cactusY = 500;
+
+var cloudStart = screenw + Math.random() * screenw;
+var cloudX = cloudStart;
+var cloudY = 100 + (300 * Math.random());
+
+var platformStart = screenw + Math.random() * screenw;
+var platformX = platformStart;
+var platformY = 400 + (200 * Math.random());
+
+var cactusangle = 0;
+var gamespeed = 8;
+var crocspeed = 20;
+var points = 0;
+var jumping = false;
+var falling = false;
+var platform = false;
+var dead = false;
+var rotateCactus = false;
+window.setInterval(poll,10);
+function poll() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Scoresheet
+    ctx.font = "30px Arial";
+    ctx.fillText(points,1100,50);
+    
+    // Movement
+    if (!dead && !jumping && !falling && SPACE_KEY) {
+      jumping = true;
+      platform = false;
+      crocangle = 0;
+    } 
+    if (!platform && jumping) {
+      if (crocY > 200) {
+        crocY-=crocspeed;
+      } else {
+        jumping = false;
+        falling = true;
+        platform = false;
+      }
+    }
+    if (!platform && !jumping && crocY <= 500) {
+      crocY+=crocspeed;
+    }
+    if (crocY >= 500) {
+      falling = false;
+    }
+    if (!dead) {
+      if (RIGHT_KEY) {
+        crocX+=crocspeed;
+        crocX = crocX >= 1000 ? 1000 : crocX;
+      }
+      if (LEFT_KEY) {
+        crocX-=crocspeed;
+        crocX = crocX <= 50 ? 50 : crocX;
+      }
+      if (cactusX > -100) {
+        cactusX-=gamespeed;
+      } else {
+        cactusX = cactusStart + (0.5 * cactusStart * Math.random());
+        if (!dead) {
+          points++;
+          gamespeed++;
+        }
+      }
+      
+      if (cloudX > -100) {
+        cloudX-=gamespeed;
+      } else {
+        cloudX = 2*screenw + screenw * Math.random();
+      }
+
+      if (platformX > -700) {
+        platformX-=gamespeed;
+      } else {
+        platformX = screenw + Math.random() * screenw
+        platformY = 400 + (200 * Math.random());
+      }
+
+      // Collision
+      if (cactusX > (crocX - 50) && (cactusX < crocX + 50) && crocY > 400) {
+         dead = true;
+      }
+
+      // Collision with cloud
+      if (cloudX > (crocX - 50) && (cloudX < crocX + 50) && cloudY > (crocY - 50) && (cloudY < crocY + 50)) {
+        points = points + 50;
+        cloudX = 2 * cloudStart + (cloudStart  * Math.random());
+        cloudY = 100 + (300 * Math.random());
+      }
+
+      // Collision with platfrom
+      if (platformX < (crocX + 50) && ((platformX + 500) > crocX - 50) && platformY < (crocY + 50) && ((platformY + 10) > crocY - 50)) {
+        crocY = platformY - 150;  
+        falling = false;
+        jumping = false;
+        platform =true;
+        crocYBase = crocY;
+      }
+
+      if (platform && (platformX > (crocX + 50) || ((platformX + 500) < crocX - 50)))  { 
+        platform = false;
+      }
+    }
+    
+    // Drawing
+    if (rotateCactus) {
+      ctx.save();
+      ctx.translate(cactusX+75, cactusY+75);
+      cactusangle -=  5 * Math.PI / 180;
+      ctx.rotate(cactusangle);
+      ctx.drawImage(imgCactus, -75, -75, 150, 150);
+      ctx.restore();
+    } else {
+      ctx.drawImage(imgCactus, cactusX, cactusY, 180, 180);
+    }
+    
+    // draw cloud
+    ctx.drawImage(imgCloud, cloudX, cloudY, 180, 180);
+
+    // draw patform
+    ctx.beginPath();
+    ctx.moveTo(platformX, platformY);
+    ctx.lineTo(platformX + 500, platformY);
+    ctx.stroke();
+  
+    // asdf
+    if (!dead) {
+      ctx.save();
+       ctx.translate(crocX+75, crocY+75);
+      if (jumping || falling) {
+        crocangle+=  20 * Math.PI / 180;
+        ctx.rotate(crocangle);
+      }
+      ctx.drawImage(imgCroc, -75, -75, 150, 150);
+      ctx.restore();
+    } else {
+      ctx.drawImage(imgDead, crocX, crocY, 150, 150);
+    }
+    
+}
+
+// when R is pressed, reload the page
+document.onkeypress = function (e) {
+    e = e || window.event;
+    if (e.keyCode == '82') {
+        location.reload();
+    }
+};
+
+</script>
+
+</body>
+</html>
