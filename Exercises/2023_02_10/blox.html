@@ -36,6 +36,10 @@
       let end_number = document.getElementById("end_number");
       let start = parseInt(start_number.value);
       let end = parseInt(end_number.value);
+      if (start >= end) {
+        alert("Start number must be smaller than end number");
+        return;
+      }
       let diff = 1 + (end - start);
       let size = Math.ceil(Math.sqrt(diff));
       if (size % 2 == 0) {
