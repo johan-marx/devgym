@@ -26,17 +26,16 @@
       text-align: center;
     }
     .center-block {
-      background-color: skyblue;
+      background-color: lightblue;
     }
   </style>
   <script>
-    const start = document.getElementById("start");
-    const start_number = document.getElementById("start_number");
-    const end_number = document.getElementById("end_number");
-
+    const button = document.getElementById("start");
     start.addEventListener("click", () => {
-      let start = start_number.value;
-      let end = end_number.value;
+      let start_number = document.getElementById("start_number");
+      let end_number = document.getElementById("end_number");
+      let start = parseInt(start_number.value);
+      let end = parseInt(end_number.value);
       let diff = 1 + (end - start);
       let size = Math.ceil(Math.sqrt(diff));
       if (size % 2 == 0) {
@@ -65,24 +64,19 @@
       var start_y = start_x;
       var direction = [0, 0];
       var step = 1;
-      var block = document.getElementById(`cell_${start_x}_${start_y}`);
-      block.innerHTML = start;
+      populate(start_x, start_y, start);
+      console.log(start, end);
       while (start < end) {
-        direction = stepDirection(direction);
-        for (let i = 1; i <= step; i++) {
-          if (start == end) break;
-          start++;
-          start_x = start_x + direction[0];
-          start_y = start_y + direction[1];
-          populate(start_x, start_y, start);
-        }
-        direction = stepDirection(direction);
-        for (let i = 1; i <= step; i++) {
-          if (start == end) break;
-          start++;
-          start_x = start_x + direction[0];
-          start_y = start_y + direction[1];
-          populate(start_x, start_y, start);
+        console.log(start, end);
+        for (let j = 1; j <= 2; j++) {
+          direction = stepDirection(direction);
+          for (let i = 1; i <= step; i++) {
+            if (start == end) return;
+            start++;
+            start_x = start_x + direction[0];
+            start_y = start_y + direction[1];
+            populate(start_x, start_y, start);
+          }
         }
 
         step = step + 1;
