@@ -40,6 +40,11 @@
         alert("Start number must be smaller than end number");
         return;
       }
+
+      if (start < 0 || end < 0) {
+        alert("Start and end must be positive integers");
+        return;
+      }
       let diff = 1 + (end - start);
       let size = Math.ceil(Math.sqrt(diff));
       if (size % 2 == 0) {
