@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body style="height: 100%">
+    <div id="myDiv" style="text-align: center; height: 97vh">
+      <canvas
+        id="myCanvas"
+        style="display: block; border: 1px solid #c3c3c3; height: 100%"
+      >
+      </canvas>
+    </div>
+    <script>
+      var canvas = document.getElementById("myCanvas");
+      var screenw = (canvas.width = document.body.clientWidth);
+      var screenh = (canvas.height = document.body.clientHeight);
+      var ctx = canvas.getContext("2d");
+      ctx.globalAlpha = 1.0; // transparency
+
+      // Graph caption
+      ctx.font = "30px Arial";
+      ctx.fillText("Logistic Map", 50, 50);
+
+      // Initial conditions
+      let r = 0;
+      let step = 0;
+      let samples = 20;
+      x = Math.random();
+
+      // Polling
+      window.setInterval(poll, 10);
+      function poll() {
+        if (r <= 4) {
+          let x = 0;
+          while (x <= 1) {
+            let y = r * x * (1 - x);
+            x += 0.01;
+            drawDot(r / 4, y);
+          }
+          r += 0.01;
+        }
+
+        //   step++;
+        //   r = 0;
+        //   while (r <= 4) {
+        //     let y = r * x * (1 - x);
+        //     r += 0.01;
+        //     drawDot(r, y);
+        //   }
+        // } else {
+        //   //
+        // }
+      }
+
+      function reset() {
+        console.log("Reset");
+        r = 0;
+        y = 0;
+        x = 0;
+        step = 0;
+      }
+
+      function drawDot(x, y) {
+        // Normalise
+        y = y * screenh;
+        x = x * screenw;
+
+        // Invert Y
+        y = screenh - y;
+
+        ctx.beginPath();
+        ctx.arc(x, y, 1, 0, Math.PI * 2, false);
+        ctx.fillStyle = this.color;
+        ctx.fill();
+      }
+    </script>
+  </body>
+</html>
