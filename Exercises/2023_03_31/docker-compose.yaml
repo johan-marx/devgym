@@ -1,0 +1,21 @@
+version: '3'
+services:
+    web:
+        image: johanmarx/stratusolve_php_apache:latest
+        volumes:
+            - ./:/var/www/html/ #bind your source
+        ports:
+            - 8080:80
+    sql:
+        image: mariadb:latest
+        environment: 
+            MYSQL_ROOT_PASSWORD: 'secret'
+            MYSQL_USER: 'dxuser'
+            MYSQL_PASSWORD: 'secret'
+            MYSQL_DATABASE: 'dxdatabase'
+        volumes: 
+            - dxsqldata:/var/lib/mysql
+        ports:
+            - 3306:3306
+volumes: 
+   dxsqldata: {}
