@@ -1,0 +1,113 @@
+<html>
+    <center>
+        <h1>Connect the dots</h1>
+        <canvas
+            id="myCanvas"
+            width="500"
+            height="500"
+            style="border: 1px solid #000"
+        >
+        </canvas>
+        <br />
+        Connect all the <span style="color: blue">blue</span> dots,
+        <span style="color: orange">orange</span> dots are no go.<br />
+        Can only connect <span style="color: blue">blue</span> dots next to each
+        other, not diagonally, no skipping dots, no revisiting a dot<br />and
+        all the <span style="color: blue">blue</span> dots must be linked.
+    </center>
+    <script>
+        const dotDetails = [
+            [
+                { x: 50, y: 50, color: "orange" },
+                { x: 150, y: 50, color: "orange" },
+                { x: 250, y: 50, color: "blue" },
+                { x: 350, y: 50, color: "blue" },
+                { x: 450, y: 50, color: "blue" },
+            ],
+            [
+                { x: 50, y: 150, color: "orange" },
+                { x: 150, y: 150, color: "orange" },
+                { x: 250, y: 150, color: "orange" },
+                { x: 350, y: 150, color: "orange" },
+                { x: 450, y: 150, color: "blue" },
+            ],
+            [
+                { x: 50, y: 250, color: "blue" },
+                { x: 150, y: 250, color: "blue" },
+                { x: 250, y: 250, color: "blue" },
+                { x: 350, y: 250, color: "orange" },
+                { x: 450, y: 250, color: "blue" },
+            ],
+            [
+                { x: 50, y: 350, color: "blue" },
+                { x: 150, y: 350, color: "blue" },
+                { x: 250, y: 350, color: "blue" },
+                { x: 350, y: 350, color: "blue" },
+                { x: 450, y: 350, color: "blue" },
+            ],
+            [
+                { x: 50, y: 450, color: "blue" },
+                { x: 150, y: 450, color: "blue" },
+                { x: 250, y: 450, color: "blue" },
+                { x: 350, y: 450, color: "blue" },
+                { x: 450, y: 450, color: "blue" },
+            ],
+        ];
+        const path = [];
+
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+
+        function drawDots() {
+            for (let j = 0; j < dotDetails.length; j++) {
+                for (let i = 0; i < dotDetails[j].length; i++) {
+                    let dot = dotDetails[j][i];
+                    ctx.beginPath();
+                    ctx.arc(dot.x, dot.y, 25, 0, 2 * Math.PI);
+                    ctx.fillStyle = dot.color;
+                    ctx.fill();
+                }
+            }
+        }
+
+        function connectDots(dot1, dot2) {
+            ctx.beginPath();
+            ctx.moveTo(dot1.x, dot1.y);
+            ctx.lineTo(dot2.x, dot2.y);
+            ctx.lineWidth = 10;
+            ctx.stroke();
+        }
+
+        function drawPath(currentDot, nextDot = null) {
+            // draw path
+            connectDots(currentDot, nextDot);
+        }
+
+        function isValidDot(dot) {
+            // determine whne valid dot
+            return true;
+        }
+
+        drawDots();
+
+        let startDot = dotDetails[0][2];
+        let nextDot = dotDetails[0][3];
+        drawPath(startDot, nextDot);
+
+        startDot = dotDetails[0][3];
+        nextDot = dotDetails[0][4];
+        drawPath(startDot, nextDot);
+
+        startDot = dotDetails[0][4];
+        nextDot = dotDetails[1][4];
+        drawPath(startDot, nextDot);
+
+        startDot = dotDetails[1][4];
+        nextDot = dotDetails[2][4];
+        drawPath(startDot, nextDot);
+
+        startDot = dotDetails[2][4];
+        nextDot = dotDetails[3][4];
+        drawPath(startDot, nextDot);
+    </script>
+</html>
