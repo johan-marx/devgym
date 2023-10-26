@@ -12,7 +12,7 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.z = 20;
 
-let bright = new THREE.DirectionalLight(0xff00ff, 0.75);
+let bright = new THREE.DirectionalLight(0xffffff, 0.9);
 bright.position.z = 5;
 
 const light = new THREE.AmbientLight(0x808080);
